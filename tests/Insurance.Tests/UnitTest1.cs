@@ -25,9 +25,28 @@ namespace Insurance.Tests
             const float expectedInsuranceValue = 1000;
 
             var dto = new HomeController.InsuranceDto
-                      {
-                          ProductId = 1,
-                      };
+            {
+                ProductId = 1,
+            };
+            var sut = new HomeController();
+
+            var result = sut.CalculateInsurance(dto);
+
+            Assert.Equal(
+                expected: expectedInsuranceValue,
+                actual: result.InsuranceValue
+            );
+        }
+
+        [Fact]
+        public void CalculateInsurance_GivenLaptopPriceUnder500Euros_ShouldAddFiveHundredEurosToInsuranceCost()
+        {
+            const float expectedInsuranceValue = 500;
+
+            var dto = new HomeController.InsuranceDto
+            {
+                ProductId = 2,
+            };
             var sut = new HomeController();
 
             var result = sut.CalculateInsurance(dto);
@@ -67,10 +86,10 @@ namespace Insurance.Tests
                 ep =>
                 {
                     ep.MapGet(
-                        "products/{id:int}",
+                        "products/1",
                         context =>
                         {
-                            int productId = int.Parse((string) context.Request.RouteValues["id"]);
+                            int productId = 1;// int.Parse((string) context.Request.RouteValues["id"]);
                             var product = new
                                           {
                                               id = productId,
@@ -78,6 +97,20 @@ namespace Insurance.Tests
                                               productTypeId = 1,
                                               salesPrice = 750
                                           };
+                            return context.Response.WriteAsync(JsonConvert.SerializeObject(product));
+                        }
+                    );
+                    ep.MapGet(
+                        "products/2",
+                        context =>
+                        {
+                            var product = new
+                            {
+                                id = 2,
+                                name = "Test Laptop",
+                                productTypeId = 2,
+                                salesPrice = 200
+                            };
                             return context.Response.WriteAsync(JsonConvert.SerializeObject(product));
                         }
                     );
@@ -91,6 +124,12 @@ namespace Insurance.Tests
                                                    {
                                                        id = 1,
                                                        name = "Test type",
+                                                       canBeInsured = true
+                                                   },
+                                                   new
+                                                   {
+                                                       id = 2,
+                                                       name = "Laptops",
                                                        canBeInsured = true
                                                    }
                                                };
