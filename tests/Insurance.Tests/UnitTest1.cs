@@ -114,6 +114,25 @@ namespace Insurance.Tests
                 actual: result.InsuranceValue
             );
         }
+
+        [Fact]
+        public void CalculateInsurance_GivenSalesPriceBetween500And2000EurosAndProductCannotBeInsured_ShouldResultInZeroAsInsuranceCost()
+        {
+            const float expectedInsuranceValue = 0;
+
+            var dto = new HomeController.InsuranceDto
+            {
+                ProductId = 6,
+            };
+            var sut = new HomeController();
+
+            var result = sut.CalculateInsurance(dto);
+
+            Assert.Equal(
+                expected: expectedInsuranceValue,
+                actual: result.InsuranceValue
+            );
+        }
     }
 
     public class ControllerTestFixture : IDisposable
@@ -215,6 +234,20 @@ namespace Insurance.Tests
                         }
                     );
                     ep.MapGet(
+                        "products/6",
+                        context =>
+                        {
+                            var product = new
+                            {
+                                id = 6,
+                                name = "Test Product",
+                                productTypeId = 4,
+                                salesPrice = 1000
+                            };
+                            return context.Response.WriteAsync(JsonConvert.SerializeObject(product));
+                        }
+                    );
+                    ep.MapGet(
                         "product_types",
                         context =>
                         {
@@ -237,6 +270,12 @@ namespace Insurance.Tests
                                                        id = 3,
                                                        name = "Smartphones",
                                                        canBeInsured = true
+                                                   },
+                                                   new
+                                                   {
+                                                       id = 4,
+                                                       name = "Test Type2",
+                                                       canBeInsured = false
                                                    }
                                                };
                             return context.Response.WriteAsync(JsonConvert.SerializeObject(productTypes));
