@@ -10,7 +10,7 @@ using Xunit;
 
 namespace Insurance.Tests
 {
-    public class InsuranceTests: IClassFixture<ControllerTestFixture>
+    public class InsuranceTests : IClassFixture<ControllerTestFixture>
     {
         private readonly ControllerTestFixture _fixture;
 
@@ -56,9 +56,67 @@ namespace Insurance.Tests
                 actual: result.InsuranceValue
             );
         }
+
+        [Fact]
+        public void CalculateInsurance_GivenSalesPriceUnder500Euros_ShouldAddZeroEurosToInsuranceCost()
+        {
+            const float expectedInsuranceValue = 0;
+
+            var dto = new HomeController.InsuranceDto
+            {
+                ProductId = 3,
+            };
+            var sut = new HomeController();
+
+            var result = sut.CalculateInsurance(dto);
+
+            Assert.Equal(
+                expected: expectedInsuranceValue,
+                actual: result.InsuranceValue
+            );
+        }
+
+        [Fact]
+        public void CalculateInsurance_GivenSalesPriceOver2000Euros_ShouldAddTwoThousandEurosToInsuranceCost()
+        {
+            const float expectedInsuranceValue = 2000;
+
+            var dto = new HomeController.InsuranceDto
+            {
+                ProductId = 4,
+            };
+            var sut = new HomeController();
+
+            var result = sut.CalculateInsurance(dto);
+
+            Assert.Equal(
+                expected: expectedInsuranceValue,
+                actual: result.InsuranceValue
+            );
+        }
+
+
+        [Fact]
+        public void CalculateInsurance_GivenPhonePriceBetween500And2000Euros_ShouldResultInFifteenHundredEurosAsInsuranceCost()
+        {
+            const float expectedInsuranceValue = 1500;
+
+            var dto = new HomeController.InsuranceDto
+            {
+                ProductId = 5,
+            };
+            var sut = new HomeController();
+
+            var result = sut.CalculateInsurance(dto);
+
+            Assert.Equal(
+                expected: expectedInsuranceValue,
+                actual: result.InsuranceValue
+            );
+        }
     }
 
-    public class ControllerTestFixture: IDisposable
+    public class ControllerTestFixture : IDisposable
     {
         private readonly IHost _host;
 
@@ -89,14 +147,14 @@ namespace Insurance.Tests
                         "products/1",
                         context =>
                         {
-                            int productId = 1;// int.Parse((string) context.Request.RouteValues["id"]);
+                            int productId = 1;
                             var product = new
-                                          {
-                                              id = productId,
-                                              name = "Test Product",
-                                              productTypeId = 1,
-                                              salesPrice = 750
-                                          };
+                            {
+                                id = productId,
+                                name = "Test Product",
+                                productTypeId = 1,
+                                salesPrice = 750
+                            };
                             return context.Response.WriteAsync(JsonConvert.SerializeObject(product));
                         }
                     );
@@ -110,6 +168,48 @@ namespace Insurance.Tests
                                 name = "Test Laptop",
                                 productTypeId = 2,
                                 salesPrice = 200
+                            };
+                            return context.Response.WriteAsync(JsonConvert.SerializeObject(product));
+                        }
+                    );
+                    ep.MapGet(
+                        "products/3",
+                        context =>
+                        {
+                            var product = new
+                            {
+                                id = 3,
+                                name = "Test Product",
+                                productTypeId = 1,
+                                salesPrice = 200
+                            };
+                            return context.Response.WriteAsync(JsonConvert.SerializeObject(product));
+                        }
+                    );
+                    ep.MapGet(
+                        "products/4",
+                        context =>
+                        {
+                            var product = new
+                            {
+                                id = 4,
+                                name = "Test Product",
+                                productTypeId = 1,
+                                salesPrice = 2000
+                            };
+                            return context.Response.WriteAsync(JsonConvert.SerializeObject(product));
+                        }
+                    );
+                    ep.MapGet(
+                        "products/5",
+                        context =>
+                        {
+                            var product = new
+                            {
+                                id = 5,
+                                name = "Test Product",
+                                productTypeId = 3,
+                                salesPrice = 1000
                             };
                             return context.Response.WriteAsync(JsonConvert.SerializeObject(product));
                         }
@@ -130,6 +230,12 @@ namespace Insurance.Tests
                                                    {
                                                        id = 2,
                                                        name = "Laptops",
+                                                       canBeInsured = true
+                                                   },
+                                                   new
+                                                   {
+                                                       id = 3,
+                                                       name = "Smartphones",
                                                        canBeInsured = true
                                                    }
                                                };
