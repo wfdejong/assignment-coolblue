@@ -1,5 +1,8 @@
 using System;
+using System.Threading.Tasks;
 using Insurance.Api.Controllers;
+using Insurance.Api.Infrasctructure;
+using Insurance.Api.Requests;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -13,6 +16,7 @@ namespace Insurance.Tests
     public class InsuranceTests : IClassFixture<ControllerTestFixture>
     {
         private readonly ControllerTestFixture _fixture;
+        private const string productsApiUrl = "http://localhost:5002";
 
         public InsuranceTests(ControllerTestFixture fixture)
         {
@@ -20,17 +24,18 @@ namespace Insurance.Tests
         }
 
         [Fact]
-        public void CalculateInsurance_GivenSalesPriceBetween500And2000Euros_ShouldAddThousandEurosToInsuranceCost()
+        public async Task CalculateInsurance_GivenSalesPriceBetween500And2000Euros_ShouldAddThousandEurosToInsuranceCost()
         {
             const float expectedInsuranceValue = 1000;
 
-            var dto = new HomeController.InsuranceDto
+            var dto = new ProductRequest
             {
                 ProductId = 1,
             };
-            var sut = new HomeController();
+            var productApi = new ProductsApi(productsApiUrl);
+            var sut = new InsuranceController(productApi);
 
-            var result = sut.CalculateInsurance(dto);
+            var result = await sut.GetInsuranceByProduct(dto);
 
             Assert.Equal(
                 expected: expectedInsuranceValue,
@@ -39,17 +44,18 @@ namespace Insurance.Tests
         }
 
         [Fact]
-        public void CalculateInsurance_GivenLaptopPriceUnder500Euros_ShouldAddFiveHundredEurosToInsuranceCost()
+        public async Task CalculateInsurance_GivenLaptopPriceUnder500Euros_ShouldAddFiveHundredEurosToInsuranceCost()
         {
             const float expectedInsuranceValue = 500;
 
-            var dto = new HomeController.InsuranceDto
+            var dto = new ProductRequest
             {
                 ProductId = 2,
             };
-            var sut = new HomeController();
+            var productApi = new ProductsApi(productsApiUrl);
+            var sut = new InsuranceController(productApi);
 
-            var result = sut.CalculateInsurance(dto);
+            var result = await sut.GetInsuranceByProduct(dto);
 
             Assert.Equal(
                 expected: expectedInsuranceValue,
@@ -58,17 +64,18 @@ namespace Insurance.Tests
         }
 
         [Fact]
-        public void CalculateInsurance_GivenSalesPriceUnder500Euros_ShouldAddZeroEurosToInsuranceCost()
+        public async Task CalculateInsurance_GivenSalesPriceUnder500Euros_ShouldAddZeroEurosToInsuranceCost()
         {
             const float expectedInsuranceValue = 0;
 
-            var dto = new HomeController.InsuranceDto
+            var dto = new ProductRequest
             {
                 ProductId = 3,
             };
-            var sut = new HomeController();
+            var productApi = new ProductsApi(productsApiUrl);
+            var sut = new InsuranceController(productApi);
 
-            var result = sut.CalculateInsurance(dto);
+            var result = await sut.GetInsuranceByProduct(dto);
 
             Assert.Equal(
                 expected: expectedInsuranceValue,
@@ -77,17 +84,18 @@ namespace Insurance.Tests
         }
 
         [Fact]
-        public void CalculateInsurance_GivenSalesPriceOver2000Euros_ShouldAddTwoThousandEurosToInsuranceCost()
+        public async Task CalculateInsurance_GivenSalesPriceOver2000Euros_ShouldAddTwoThousandEurosToInsuranceCost()
         {
             const float expectedInsuranceValue = 2000;
 
-            var dto = new HomeController.InsuranceDto
+            var dto = new ProductRequest
             {
                 ProductId = 4,
             };
-            var sut = new HomeController();
+            var productApi = new ProductsApi(productsApiUrl);
+            var sut = new InsuranceController(productApi);
 
-            var result = sut.CalculateInsurance(dto);
+            var result = await sut.GetInsuranceByProduct(dto);
 
             Assert.Equal(
                 expected: expectedInsuranceValue,
@@ -97,17 +105,18 @@ namespace Insurance.Tests
 
 
         [Fact]
-        public void CalculateInsurance_GivenPhonePriceBetween500And2000Euros_ShouldResultInFifteenHundredEurosAsInsuranceCost()
+        public async Task CalculateInsurance_GivenPhonePriceBetween500And2000Euros_ShouldResultInFifteenHundredEurosAsInsuranceCost()
         {
             const float expectedInsuranceValue = 1500;
 
-            var dto = new HomeController.InsuranceDto
+            var dto = new ProductRequest
             {
                 ProductId = 5,
             };
-            var sut = new HomeController();
+            var productApi = new ProductsApi(productsApiUrl);
+            var sut = new InsuranceController(productApi);
 
-            var result = sut.CalculateInsurance(dto);
+            var result = await sut.GetInsuranceByProduct(dto);
 
             Assert.Equal(
                 expected: expectedInsuranceValue,
@@ -116,17 +125,18 @@ namespace Insurance.Tests
         }
 
         [Fact]
-        public void CalculateInsurance_GivenSalesPriceBetween500And2000EurosAndProductCannotBeInsured_ShouldResultInZeroAsInsuranceCost()
+        public async Task CalculateInsurance_GivenSalesPriceBetween500And2000EurosAndProductCannotBeInsured_ShouldResultInZeroAsInsuranceCost()
         {
             const float expectedInsuranceValue = 0;
 
-            var dto = new HomeController.InsuranceDto
+            var dto = new ProductRequest
             {
                 ProductId = 6,
             };
-            var sut = new HomeController();
+            var productApi = new ProductsApi(productsApiUrl);
+            var sut = new InsuranceController(productApi);
 
-            var result = sut.CalculateInsurance(dto);
+            var result = await sut.GetInsuranceByProduct(dto);
 
             Assert.Equal(
                 expected: expectedInsuranceValue,
@@ -248,37 +258,55 @@ namespace Insurance.Tests
                         }
                     );
                     ep.MapGet(
-                        "product_types",
+                        "product_types/1",
                         context =>
                         {
-                            var productTypes = new[]
-                                               {
-                                                   new
-                                                   {
-                                                       id = 1,
-                                                       name = "Test type",
-                                                       canBeInsured = true
-                                                   },
-                                                   new
-                                                   {
-                                                       id = 2,
-                                                       name = "Laptops",
-                                                       canBeInsured = true
-                                                   },
-                                                   new
-                                                   {
-                                                       id = 3,
-                                                       name = "Smartphones",
-                                                       canBeInsured = true
-                                                   },
-                                                   new
-                                                   {
-                                                       id = 4,
-                                                       name = "Test Type2",
-                                                       canBeInsured = false
-                                                   }
-                                               };
-                            return context.Response.WriteAsync(JsonConvert.SerializeObject(productTypes));
+                            var productType = new
+                            {
+                                id = 1,
+                                name = "Test type",
+                                canBeInsured = true
+                            };
+                            return context.Response.WriteAsync(JsonConvert.SerializeObject(productType));
+                        }
+                    );
+                    ep.MapGet(
+                        "product_types/2",
+                        context =>
+                        {
+                            var productType = new
+                            {
+                                id = 2,
+                                name = "Laptops",
+                                canBeInsured = true
+                            };
+                            return context.Response.WriteAsync(JsonConvert.SerializeObject(productType));
+                        }
+                    );
+                    ep.MapGet(
+                        "product_types/3",
+                        context =>
+                        {
+                            var productType = new
+                            {
+                                id = 3,
+                                name = "Smartphones",
+                                canBeInsured = true
+                            };                      
+                            return context.Response.WriteAsync(JsonConvert.SerializeObject(productType));
+                        }
+                    );
+                    ep.MapGet(
+                        "product_types/4",
+                        context =>
+                        {
+                            var productType = new
+                            {
+                                id = 4,
+                                name = "Test Type2",
+                                canBeInsured = false
+                            };
+                            return context.Response.WriteAsync(JsonConvert.SerializeObject(productType));
                         }
                     );
                 }
