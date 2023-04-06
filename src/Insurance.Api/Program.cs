@@ -6,13 +6,14 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Serilog;
 
 namespace Insurance.Api
 {
     public class Program
     {
         public static void Main(string[] args)
-        {
+        {            
             CreateHostBuilder(args).Build().Run();
         }
 
@@ -20,7 +21,14 @@ namespace Insurance.Api
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    webBuilder.UseStartup<Startup>();
-                });
+                    webBuilder
+                        .ConfigureLogging(logging => logging.ClearProviders())
+                        .UseStartup<Startup>();
+                })
+             .UseSerilog((context, services, configuration) => configuration
+                .ReadFrom.Configuration(context.Configuration)
+                .ReadFrom.Services(services)
+                .Enrich.FromLogContext()
+                .WriteTo.Console());
     }
 }

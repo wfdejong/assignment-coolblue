@@ -5,7 +5,7 @@ namespace Insurance.Api.Infrasctructure
 {
     public interface IProductsApi
     {
-        Task<ProductDto> Get(int id);
-        Task<ProductTypeDto> GetProductType(int productTypeId);
+        Task<Dto<ProductDto>> Get(int id);
+        Task<Dto<ProductTypeDto>> GetProductType(int productTypeId);
     }
 }

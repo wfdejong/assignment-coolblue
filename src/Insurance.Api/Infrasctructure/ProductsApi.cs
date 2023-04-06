@@ -7,16 +7,14 @@ namespace Insurance.Api.Infrasctructure
     {        
         public ProductsApi(string apiAddress) : base(apiAddress) { }
 
-        public async Task<ProductDto> Get(int id)
+        public async Task<Dto<ProductDto>> Get(int id)
         {
-            var response = await Get<ProductDto>(string.Format("/products/{0:G}", id));
-            return response.Result;
+            return await Get<ProductDto>(string.Format("/products/{0:G}", id));            
         }
 
-        public async Task<ProductTypeDto> GetProductType(int productTypeId)
+        public async Task<Dto<ProductTypeDto>> GetProductType(int productTypeId)
         {
-            var response = await Get<ProductTypeDto>(string.Format("/product_types/{0:G}", productTypeId));
-            return response.Result;
+            return await Get<ProductTypeDto>(string.Format("/product_types/{0:G}", productTypeId));            
         }
     }
 }

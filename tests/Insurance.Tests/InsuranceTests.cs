@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Xunit;
 
@@ -17,7 +18,7 @@ namespace Insurance.Tests
     {
         private readonly ControllerTestFixture _fixture;
         private const string productsApiUrl = "http://localhost:5002";
-
+        
         public InsuranceTests(ControllerTestFixture fixture)
         {
             _fixture = fixture;
@@ -39,7 +40,7 @@ namespace Insurance.Tests
 
             Assert.Equal(
                 expected: expectedInsuranceValue,
-                actual: result.InsuranceValue
+                actual: result.Value.InsuranceValue
             );
         }
 
@@ -59,7 +60,7 @@ namespace Insurance.Tests
 
             Assert.Equal(
                 expected: expectedInsuranceValue,
-                actual: result.InsuranceValue
+                actual: result.Value.InsuranceValue
             );
         }
 
@@ -79,7 +80,7 @@ namespace Insurance.Tests
 
             Assert.Equal(
                 expected: expectedInsuranceValue,
-                actual: result.InsuranceValue
+                actual: result.Value.InsuranceValue
             );
         }
 
@@ -99,7 +100,7 @@ namespace Insurance.Tests
 
             Assert.Equal(
                 expected: expectedInsuranceValue,
-                actual: result.InsuranceValue
+                actual: result.Value.InsuranceValue
             );
         }
 
@@ -120,7 +121,7 @@ namespace Insurance.Tests
 
             Assert.Equal(
                 expected: expectedInsuranceValue,
-                actual: result.InsuranceValue
+                actual: result.Value.InsuranceValue
             );
         }
 
@@ -140,7 +141,7 @@ namespace Insurance.Tests
 
             Assert.Equal(
                 expected: expectedInsuranceValue,
-                actual: result.InsuranceValue
+                actual: result.Value.InsuranceValue
             );
         }
     }
