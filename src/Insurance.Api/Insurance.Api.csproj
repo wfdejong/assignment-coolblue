@@ -10,7 +10,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Response\" />
     <Folder Include="Requests\" />
   </ItemGroup>
 </Project>

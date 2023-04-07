@@ -1,6 +1,7 @@
 using Insurance.Api.Infrasctructure;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -29,6 +30,7 @@ namespace Insurance.Api
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             app.UseSerilogRequestLogging();
+            app.UsePathBase(new PathString(@"/api"));
 
             if (env.IsDevelopment())
             {

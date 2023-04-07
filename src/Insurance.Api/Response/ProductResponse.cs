@@ -4,8 +4,8 @@ namespace Insurance.Api.Responses;
 
 public class ProductResponse
 {
-    public int ProductId { get; set; }
-    public float InsuranceValue { get; set; }
+    public int ProductId { get; }
+    public float InsuranceValue { get; }
 
     public ProductResponse(ProductInsurance productInsurance)
     {

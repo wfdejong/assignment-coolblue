@@ -15,15 +15,17 @@
             ShouldBeInsured = shouldBeInsured;
             SalesPrice = salesPrice;
 
-            if (ProductTypeName == "Laptops" || ProductTypeName == "Smartphones" && shouldBeInsured)
+            if(!shouldBeInsured) 
+                return;
+
+            if (ProductTypeName == "Laptops" || ProductTypeName == "Smartphones")
                 InsuranceValue += 500;
 
             if (SalesPrice > 500 && SalesPrice < 2000)
-                if (shouldBeInsured)
-                    InsuranceValue += 1000;
+                InsuranceValue += 1000;
+
             if (SalesPrice >= 2000)
-                if (shouldBeInsured)
-                    InsuranceValue += 2000;
+                InsuranceValue += 2000;
         }
     }
 }

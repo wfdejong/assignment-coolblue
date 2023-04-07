@@ -1,11 +1,15 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Insurance.Api.Controllers;
 using Insurance.Api.Infrasctructure;
 using Insurance.Api.Requests;
+using Insurance.Api.Response;
+using Insurance.Api.Responses;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -18,7 +22,7 @@ namespace Insurance.Tests
     {
         private readonly ControllerTestFixture _fixture;
         private const string productsApiUrl = "http://localhost:5002";
-        
+
         public InsuranceTests(ControllerTestFixture fixture)
         {
             _fixture = fixture;
@@ -29,119 +33,185 @@ namespace Insurance.Tests
         {
             const float expectedInsuranceValue = 1000;
 
-            var dto = new ProductRequest
+            var request = new ProductRequest
             {
                 ProductId = 1,
             };
             var productApi = new ProductsApi(productsApiUrl);
             var sut = new InsuranceController(productApi);
 
-            var result = await sut.GetInsuranceByProduct(dto);
-
+            var result = await sut.GetInsuranceByProduct(request);
+            
             Assert.Equal(
                 expected: expectedInsuranceValue,
-                actual: result.Value.InsuranceValue
+                actual: ((ProductResponse)((OkObjectResult)result.Result).Value).InsuranceValue
             );
         }
 
         [Fact]
-        public async Task CalculateInsurance_GivenLaptopPriceUnder500Euros_ShouldAddFiveHundredEurosToInsuranceCost()
+        public async Task GetInsuranceByProduct_GivenLaptopPriceUnder500Euros_ShouldAddFiveHundredEurosToInsuranceCost()
         {
             const float expectedInsuranceValue = 500;
 
-            var dto = new ProductRequest
+            var request = new ProductRequest
             {
                 ProductId = 2,
             };
             var productApi = new ProductsApi(productsApiUrl);
             var sut = new InsuranceController(productApi);
 
-            var result = await sut.GetInsuranceByProduct(dto);
+            var result = await sut.GetInsuranceByProduct(request);
 
             Assert.Equal(
                 expected: expectedInsuranceValue,
-                actual: result.Value.InsuranceValue
+                actual: ((ProductResponse)((OkObjectResult)result.Result).Value).InsuranceValue
             );
         }
 
         [Fact]
-        public async Task CalculateInsurance_GivenSalesPriceUnder500Euros_ShouldAddZeroEurosToInsuranceCost()
+        public async Task GetInsuranceByProduct_GivenSalesPriceUnder500Euros_ShouldAddZeroEurosToInsuranceCost()
         {
             const float expectedInsuranceValue = 0;
 
-            var dto = new ProductRequest
+            var request = new ProductRequest
             {
                 ProductId = 3,
             };
             var productApi = new ProductsApi(productsApiUrl);
             var sut = new InsuranceController(productApi);
 
-            var result = await sut.GetInsuranceByProduct(dto);
+            var result = await sut.GetInsuranceByProduct(request);
 
             Assert.Equal(
                 expected: expectedInsuranceValue,
-                actual: result.Value.InsuranceValue
+                actual: ((ProductResponse)((OkObjectResult)result.Result).Value).InsuranceValue
             );
         }
 
         [Fact]
-        public async Task CalculateInsurance_GivenSalesPriceOver2000Euros_ShouldAddTwoThousandEurosToInsuranceCost()
+        public async Task GetInsuranceByProduct_GivenSalesPriceOver2000Euros_ShouldAddTwoThousandEurosToInsuranceCost()
         {
             const float expectedInsuranceValue = 2000;
 
-            var dto = new ProductRequest
+            var request = new ProductRequest
             {
                 ProductId = 4,
             };
             var productApi = new ProductsApi(productsApiUrl);
             var sut = new InsuranceController(productApi);
 
-            var result = await sut.GetInsuranceByProduct(dto);
+            var result = await sut.GetInsuranceByProduct(request);
 
             Assert.Equal(
                 expected: expectedInsuranceValue,
-                actual: result.Value.InsuranceValue
+                actual: ((ProductResponse)((OkObjectResult)result.Result).Value).InsuranceValue
             );
         }
 
 
         [Fact]
-        public async Task CalculateInsurance_GivenPhonePriceBetween500And2000Euros_ShouldResultInFifteenHundredEurosAsInsuranceCost()
+        public async Task GetInsuranceByProduct_GivenPhonePriceBetween500And2000Euros_ShouldResultInFifteenHundredEurosAsInsuranceCost()
         {
             const float expectedInsuranceValue = 1500;
 
-            var dto = new ProductRequest
+            var request = new ProductRequest
             {
                 ProductId = 5,
             };
             var productApi = new ProductsApi(productsApiUrl);
             var sut = new InsuranceController(productApi);
 
-            var result = await sut.GetInsuranceByProduct(dto);
+            var result = await sut.GetInsuranceByProduct(request);
 
             Assert.Equal(
                 expected: expectedInsuranceValue,
-                actual: result.Value.InsuranceValue
+                actual: ((ProductResponse)((OkObjectResult)result.Result).Value).InsuranceValue
             );
         }
 
         [Fact]
-        public async Task CalculateInsurance_GivenSalesPriceBetween500And2000EurosAndProductCannotBeInsured_ShouldResultInZeroAsInsuranceCost()
+        public async Task GetInsuranceByProduct_GivenSalesPriceBetween500And2000EurosAndProductCannotBeInsured_ShouldResultInZeroAsInsuranceCost()
         {
             const float expectedInsuranceValue = 0;
 
-            var dto = new ProductRequest
+            var request = new ProductRequest
             {
                 ProductId = 6,
             };
             var productApi = new ProductsApi(productsApiUrl);
             var sut = new InsuranceController(productApi);
 
-            var result = await sut.GetInsuranceByProduct(dto);
+            var result = await sut.GetInsuranceByProduct(request);
 
             Assert.Equal(
                 expected: expectedInsuranceValue,
-                actual: result.Value.InsuranceValue
+                actual: ((ProductResponse)((OkObjectResult)result.Result).Value).InsuranceValue
+            );
+        }
+
+        [Fact]
+        public async Task GetInsuranceByCart_WithMultipleItems_CalculatesTotal()
+        {
+            const float totalExpected = 3500;
+
+            var request = new List<ProductRequest>
+            {
+                new ProductRequest{ProductId = 4},
+                new ProductRequest { ProductId= 5 }
+            };
+
+            var productApi = new ProductsApi(productsApiUrl);
+            var sut = new InsuranceController(productApi);
+
+            var result = await sut.GetInsuranceByCart(request);
+
+            Assert.Equal(
+                expected: totalExpected,
+                actual: ((CartInsuranceResponse)((OkObjectResult)result.Result).Value).TotalInsuranceValue
+            );
+        }
+
+        [Fact]
+        public async Task GetInsuranceByCart_WithProductCannotBeInsured_CalculatesTotal()
+        {
+            const float totalExpected = 1500;
+
+            var request = new List<ProductRequest>
+            {
+                new ProductRequest{ProductId = 5},
+                new ProductRequest { ProductId= 6 }
+            };
+
+            var productApi = new ProductsApi(productsApiUrl);
+            var sut = new InsuranceController(productApi);
+
+            var result = await sut.GetInsuranceByCart(request);
+
+            Assert.Equal(
+                expected: totalExpected,
+                actual: ((CartInsuranceResponse)((OkObjectResult)result.Result).Value).TotalInsuranceValue
+            );
+        }
+
+        [Fact]
+        public async Task GetInsuranceByCart_WithCamera_AddsExtra500toTotal()
+        {
+            const float totalExpected = 3000;
+
+            var request = new List<ProductRequest>
+            {
+                new ProductRequest{ProductId = 5},
+                new ProductRequest { ProductId= 7 }
+            };
+
+            var productApi = new ProductsApi(productsApiUrl);
+            var sut = new InsuranceController(productApi);
+
+            var result = await sut.GetInsuranceByCart(request);
+
+            Assert.Equal(
+                expected: totalExpected,
+                actual: ((CartInsuranceResponse)((OkObjectResult)result.Result).Value).TotalInsuranceValue
             );
         }
     }
@@ -259,6 +329,20 @@ namespace Insurance.Tests
                         }
                     );
                     ep.MapGet(
+                        "products/7",
+                        context =>
+                        {
+                            var product = new
+                            {
+                                id = 7,
+                                name = "Digital Camera",
+                                productTypeId = 5,
+                                salesPrice = 1000
+                            };
+                            return context.Response.WriteAsync(JsonConvert.SerializeObject(product));
+                        }
+                    );
+                    ep.MapGet(
                         "product_types/1",
                         context =>
                         {
@@ -306,6 +390,19 @@ namespace Insurance.Tests
                                 id = 4,
                                 name = "Test Type2",
                                 canBeInsured = false
+                            };
+                            return context.Response.WriteAsync(JsonConvert.SerializeObject(productType));
+                        }
+                    );
+                    ep.MapGet(
+                        "product_types/5",
+                        context =>
+                        {
+                            var productType = new
+                            {
+                                id = 5,
+                                name = "Digital cameras",
+                                canBeInsured = true
                             };
                             return context.Response.WriteAsync(JsonConvert.SerializeObject(productType));
                         }
