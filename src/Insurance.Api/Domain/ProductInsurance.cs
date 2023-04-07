@@ -1,4 +1,7 @@
-﻿namespace Insurance.Api.Domain
+﻿using System.Collections;
+using System.Collections.Generic;
+
+namespace Insurance.Api.Domain
 {
     public class ProductInsurance
     {
@@ -8,12 +11,14 @@
         public float InsuranceValue { get; } = 0f;
         public float SalesPrice { get; }
 
-        public ProductInsurance(int productId, string productTypeName, bool shouldBeInsured, float salesPrice)
+        public ProductInsurance(int productId, string productTypeName, bool shouldBeInsured, float salesPrice, float surcharge)
         {
             ProductId = productId;
             ProductTypeName = productTypeName;
             ShouldBeInsured = shouldBeInsured;
             SalesPrice = salesPrice;
+
+            InsuranceValue += surcharge;
 
             if(!shouldBeInsured) 
                 return;

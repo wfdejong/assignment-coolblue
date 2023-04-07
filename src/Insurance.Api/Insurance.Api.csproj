@@ -8,8 +8,4 @@
     <PackageReference Include="Newtonsoft.Json" Version="12.0.0" />
     <PackageReference Include="Serilog.AspNetCore" Version="6.1.0" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Requests\" />
-  </ItemGroup>
 </Project>

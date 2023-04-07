@@ -23,6 +23,7 @@ namespace Insurance.Api
         {
             var productsApi = new ProductsApi(Configuration.GetValue<string>("ProductsApi"));
             services.AddSingleton<IProductsApi>(productsApi);
+            services.AddSingleton<ISurchargeResository, SurchargeRepository>();
             services.AddControllers();
         }
 

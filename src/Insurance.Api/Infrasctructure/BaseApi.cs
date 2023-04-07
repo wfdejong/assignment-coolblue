@@ -14,7 +14,7 @@ namespace Insurance.Api.Infrasctructure
         {
             _apiAddress = apiAddress;
         }
-        protected async Task<Dto<T>> Get<T>(string path)
+        protected async Task<ApiDto<T>> Get<T>(string path)
         {
             using (HttpClient client = new HttpClient())
             {
@@ -22,7 +22,7 @@ namespace Insurance.Api.Infrasctructure
 
                 HttpResponseMessage response = await client.GetAsync(path);
 
-                Dto<T> dto = (Dto<T>)Activator.CreateInstance(typeof(Dto<T>), response.StatusCode, response.IsSuccessStatusCode);
+                ApiDto<T> dto = (ApiDto<T>)Activator.CreateInstance(typeof(ApiDto<T>), response.StatusCode, response.IsSuccessStatusCode);
 
                 if (response.IsSuccessStatusCode)
                 {

@@ -17,7 +17,7 @@ namespace Insurance.Tests.Domain
             var _sut = new CartInsurance();
 
             //act
-            foreach(var productInsurance in productInsurances) 
+            foreach (var productInsurance in productInsurances)
             {
                 _sut.AddProductInsurance(productInsurance);
             }
@@ -32,80 +32,88 @@ namespace Insurance.Tests.Domain
             {
                 2000f,
                 new List<ProductInsurance>() {
-                    new ProductInsurance(1, "Anything", true, 1000),
-                    new ProductInsurance(1, "Anything", true, 1000)
+                    new ProductInsurance(1, "Anything", true, 1000,0),
+                    new ProductInsurance(1, "Anything", true, 1000,0)
                 }
             },
             new object[]
             {
                 1000f,
                 new List<ProductInsurance>() {
-                    new ProductInsurance(1, "Anything", true, 500),
-                    new ProductInsurance(1, "Anything", true, 1000)
+                    new ProductInsurance(1, "Anything", true, 500,0),
+                    new ProductInsurance(1, "Anything", true, 1000,0)
                 }
             },
             new object[]
             {
                 4000f,
                 new List<ProductInsurance>() {
-                    new ProductInsurance(1, "Anything", true, 2000),
-                    new ProductInsurance(1, "Anything", true, 2000)
+                    new ProductInsurance(1, "Anything", true, 2000,0),
+                    new ProductInsurance(1, "Anything", true, 2000,0)
                 }
             },
             new object[]
             {
                 2000f,
                 new List<ProductInsurance>() {
-                    new ProductInsurance(1, "Laptops", true, 500),
-                    new ProductInsurance(1, "Smartphones", true, 1000)
+                    new ProductInsurance(1, "Laptops", true, 500,0),
+                    new ProductInsurance(1, "Smartphones", true, 1000,0)
                 }
             },
             new object[]
             {
                 3000f,
                 new List<ProductInsurance>() {
-                    new ProductInsurance(1, "Laptops", true, 1000),
-                    new ProductInsurance(1, "Smartphones", true, 1000)
+                    new ProductInsurance(1, "Laptops", true, 1000,0),
+                    new ProductInsurance(1, "Smartphones", true, 1000,0)
                 }
             },
             new object[]{
                 5000f,
                 new List<ProductInsurance>() {
-                    new ProductInsurance(1, "Laptops", true, 2000),
-                    new ProductInsurance(1, "Smartphones", true, 2000)
+                    new ProductInsurance(1, "Laptops", true, 2000,0),
+                    new ProductInsurance(1, "Smartphones", true, 2000,0)
                 }
             },
             new object[]{
                 1500f,
                 new List<ProductInsurance>() {
-                    new ProductInsurance(1, "Laptops", false, 500),
-                    new ProductInsurance(1, "Smartphones", true, 1000)
+                    new ProductInsurance(1, "Laptops", false, 500,0),
+                    new ProductInsurance(1, "Smartphones", true, 1000,0)
                 }
             },
             new object[]{
                 5000f,
                 new List<ProductInsurance>() {
-                    new ProductInsurance(1, "Laptops", true, 500),
-                    new ProductInsurance(1, "Smartphones", true, 1000),
-                    new ProductInsurance(1, "Anything", true, 1000),
-                    new ProductInsurance(1, "Anything", true, 5000),
-                    new ProductInsurance(1, "Anything", false, 1000)
+                    new ProductInsurance(1, "Laptops", true, 500,0),
+                    new ProductInsurance(1, "Smartphones", true, 1000,0),
+                    new ProductInsurance(1, "Anything", true, 1000,0),
+                    new ProductInsurance(1, "Anything", true, 5000,0),
+                    new ProductInsurance(1, "Anything", false, 1000,0)
                 }
             },
             new object[]{
                 2000f,
                 new List<ProductInsurance>() {
-                    new ProductInsurance(1, "Laptops", true, 500),
-                    new ProductInsurance(1, "Digital cameras", true, 1000)
+                    new ProductInsurance(1, "Laptops", true, 500,0),
+                    new ProductInsurance(1, "Digital cameras", true, 1000,0)
                 }
             },
             new object[]{
                 2500f,
                 new List<ProductInsurance>() {
-                    new ProductInsurance(1, "Digital cameras", true, 1000),
-                    new ProductInsurance(1, "Digital cameras", true, 1000)
+                    new ProductInsurance(1, "Digital cameras", true, 1000,0),
+                    new ProductInsurance(1, "Digital cameras", true, 1000,0)
                 }
-            }
+            },
+            new object[]
+            {
+                2120f,
+                new List<ProductInsurance>() {
+                    new ProductInsurance(1, "Anything", true, 1000,120),
+                    new ProductInsurance(1, "Anything", true, 1000,0)
+                }
+            },
         };
     }
 }

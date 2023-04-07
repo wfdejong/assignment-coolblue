@@ -16,12 +16,15 @@ namespace Insurance.Api.Controllers;
 public class InsuranceController : ControllerBase
 {
     private readonly IProductsApi _productApi;
+    private readonly ISurchargeResository _surchargeRespository;
     private readonly ILogger _logger = Log.ForContext("test", nameof(InsuranceController));
 
-	public InsuranceController(IProductsApi productApi)
+	public InsuranceController(IProductsApi productApi, ISurchargeResository surchargeResository)
 	{
         _productApi= productApi;
-	}
+        _surchargeRespository = surchargeResository;
+
+    }
 
     [HttpPost]
     [Route("product")]
@@ -71,6 +74,24 @@ public class InsuranceController : ControllerBase
         }
     }
 
+    [HttpPost]
+    [Route("surcharge")]
+    public async Task<IActionResult> AddSurchargeToProductType([FromBody] SurchargeRequest surchargeRequest)
+    {
+        try
+        {
+            //TODO: check if producttype name exists and return 404 if not.
+            _surchargeRespository.Add(surchargeRequest.ProductTypeName, surchargeRequest.Surcharge);
+
+            return Ok();
+        }
+        catch (Exception e)
+        {
+            _logger.Error(e.Message);
+            return StatusCode(500, "Something went wrong, please check logs for details");
+        }
+    }
+
     private async Task<ProductInsurance> GetProductInsurance(int productId)
     {
         //get product
@@ -87,10 +108,10 @@ public class InsuranceController : ControllerBase
             throw new Exception($"Error in searching productType. Service returned {productTypeDto.StatusCode}");
 
         //create and return Domain object
-        return new ProductInsurance(
-            productId, productTypeDto.Result.Name, productTypeDto.Result.CanBeInsured, productDto.Result.SalesPrice);
+        var surcharge = _surchargeRespository.Get(productTypeDto.Result.Name);
 
-        
+        return new ProductInsurance(
+            productId, productTypeDto.Result.Name, productTypeDto.Result.CanBeInsured, productDto.Result.SalesPrice, surcharge);        
     }
 }
 

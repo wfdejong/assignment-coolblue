@@ -22,10 +22,16 @@ namespace Insurance.Tests
     {
         private readonly ControllerTestFixture _fixture;
         private const string productsApiUrl = "http://localhost:5002";
+        private readonly ProductsApi _productsApi;
+        private readonly InsuranceController _sut;
+        private readonly ISurchargeResository _surchargeRepository;
 
         public InsuranceTests(ControllerTestFixture fixture)
         {
             _fixture = fixture;
+            _productsApi = new ProductsApi(productsApiUrl);
+            _surchargeRepository = new SurchargeRepository();
+            _sut = new InsuranceController(_productsApi, _surchargeRepository);
         }
 
         [Fact]
@@ -37,10 +43,8 @@ namespace Insurance.Tests
             {
                 ProductId = 1,
             };
-            var productApi = new ProductsApi(productsApiUrl);
-            var sut = new InsuranceController(productApi);
-
-            var result = await sut.GetInsuranceByProduct(request);
+            
+            var result = await _sut.GetInsuranceByProduct(request);
             
             Assert.Equal(
                 expected: expectedInsuranceValue,
@@ -57,10 +61,8 @@ namespace Insurance.Tests
             {
                 ProductId = 2,
             };
-            var productApi = new ProductsApi(productsApiUrl);
-            var sut = new InsuranceController(productApi);
-
-            var result = await sut.GetInsuranceByProduct(request);
+            
+            var result = await _sut.GetInsuranceByProduct(request);
 
             Assert.Equal(
                 expected: expectedInsuranceValue,
@@ -77,10 +79,8 @@ namespace Insurance.Tests
             {
                 ProductId = 3,
             };
-            var productApi = new ProductsApi(productsApiUrl);
-            var sut = new InsuranceController(productApi);
-
-            var result = await sut.GetInsuranceByProduct(request);
+           
+            var result = await _sut.GetInsuranceByProduct(request);
 
             Assert.Equal(
                 expected: expectedInsuranceValue,
@@ -97,17 +97,14 @@ namespace Insurance.Tests
             {
                 ProductId = 4,
             };
-            var productApi = new ProductsApi(productsApiUrl);
-            var sut = new InsuranceController(productApi);
-
-            var result = await sut.GetInsuranceByProduct(request);
+            
+            var result = await _sut.GetInsuranceByProduct(request);
 
             Assert.Equal(
                 expected: expectedInsuranceValue,
                 actual: ((ProductResponse)((OkObjectResult)result.Result).Value).InsuranceValue
             );
         }
-
 
         [Fact]
         public async Task GetInsuranceByProduct_GivenPhonePriceBetween500And2000Euros_ShouldResultInFifteenHundredEurosAsInsuranceCost()
@@ -118,10 +115,8 @@ namespace Insurance.Tests
             {
                 ProductId = 5,
             };
-            var productApi = new ProductsApi(productsApiUrl);
-            var sut = new InsuranceController(productApi);
-
-            var result = await sut.GetInsuranceByProduct(request);
+            
+            var result = await _sut.GetInsuranceByProduct(request);
 
             Assert.Equal(
                 expected: expectedInsuranceValue,
@@ -138,10 +133,8 @@ namespace Insurance.Tests
             {
                 ProductId = 6,
             };
-            var productApi = new ProductsApi(productsApiUrl);
-            var sut = new InsuranceController(productApi);
-
-            var result = await sut.GetInsuranceByProduct(request);
+            
+            var result = await _sut.GetInsuranceByProduct(request);
 
             Assert.Equal(
                 expected: expectedInsuranceValue,
@@ -159,11 +152,8 @@ namespace Insurance.Tests
                 new ProductRequest{ProductId = 4},
                 new ProductRequest { ProductId= 5 }
             };
-
-            var productApi = new ProductsApi(productsApiUrl);
-            var sut = new InsuranceController(productApi);
-
-            var result = await sut.GetInsuranceByCart(request);
+                        
+            var result = await _sut.GetInsuranceByCart(request);
 
             Assert.Equal(
                 expected: totalExpected,
@@ -181,11 +171,8 @@ namespace Insurance.Tests
                 new ProductRequest{ProductId = 5},
                 new ProductRequest { ProductId= 6 }
             };
-
-            var productApi = new ProductsApi(productsApiUrl);
-            var sut = new InsuranceController(productApi);
-
-            var result = await sut.GetInsuranceByCart(request);
+                       
+            var result = await _sut.GetInsuranceByCart(request);
 
             Assert.Equal(
                 expected: totalExpected,
@@ -204,14 +191,70 @@ namespace Insurance.Tests
                 new ProductRequest { ProductId= 7 }
             };
 
-            var productApi = new ProductsApi(productsApiUrl);
-            var sut = new InsuranceController(productApi);
-
-            var result = await sut.GetInsuranceByCart(request);
+            var result = await _sut.GetInsuranceByCart(request);
 
             Assert.Equal(
                 expected: totalExpected,
                 actual: ((CartInsuranceResponse)((OkObjectResult)result.Result).Value).TotalInsuranceValue
+            );
+        }
+
+        [Fact]
+        public async Task AddSurchargeToProductType_WithSurcharge_AddsSurchargeToProduct()
+        {
+            const float expectedInsuranceValue = 1120;
+
+            var request = new ProductRequest
+            {
+                ProductId = 1,
+            };
+
+            var surchargeRequest = new SurchargeRequest
+            {
+                ProductTypeName = "Test type",
+                Surcharge = 120
+            };
+
+            await _sut.AddSurchargeToProductType(surchargeRequest);
+
+            var result = await _sut.GetInsuranceByProduct(request);
+
+            Assert.Equal(
+                expected: expectedInsuranceValue,
+                actual: ((ProductResponse)((OkObjectResult)result.Result).Value).InsuranceValue
+            );
+        }
+
+        [Fact]
+        public async Task AddSurchargeToProductType_WithDoubleSurcharge_AddsSurchargeToProduct()
+        {
+            const float expectedInsuranceValue = 1150;
+
+            var request = new ProductRequest
+            {
+                ProductId = 1,
+            };
+
+            var surchargeRequest1 = new SurchargeRequest
+            {
+                ProductTypeName = "Test type",
+                Surcharge = 120
+            };
+
+            var surchargeRequest2 = new SurchargeRequest
+            {
+                ProductTypeName = "Test type",
+                Surcharge = 150
+            };
+
+            await _sut.AddSurchargeToProductType(surchargeRequest1);
+            await _sut.AddSurchargeToProductType(surchargeRequest2);
+
+            var result = await _sut.GetInsuranceByProduct(request);
+
+            Assert.Equal(
+                expected: expectedInsuranceValue,
+                actual: ((ProductResponse)((OkObjectResult)result.Result).Value).InsuranceValue
             );
         }
     }
