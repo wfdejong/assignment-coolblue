@@ -46,7 +46,7 @@ public class InsuranceController : ControllerBase
 
     [HttpPost]
     [Route("cart")]
-    public async Task<ActionResult<ProductResponse>> GetInsuranceByCart(List<ProductRequest> productRequests)
+    public async Task<ActionResult<ProductResponse>> GetInsuranceByCart([FromBody] List<ProductRequest> productRequests)
     {
         try 
         {
