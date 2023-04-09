@@ -6,7 +6,6 @@ using Insurance.Api.Responses;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -76,7 +75,7 @@ public class InsuranceController : ControllerBase
 
     [HttpPost]
     [Route("surcharge")]
-    public async Task<IActionResult> AddSurchargeToProductType([FromBody] SurchargeRequest surchargeRequest)
+    public IActionResult AddSurchargeToProductType([FromBody] SurchargeRequest surchargeRequest)
     {
         try
         {

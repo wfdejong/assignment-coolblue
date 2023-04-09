@@ -215,7 +215,7 @@ namespace Insurance.Tests
                 Surcharge = 120
             };
 
-            await _sut.AddSurchargeToProductType(surchargeRequest);
+            _sut.AddSurchargeToProductType(surchargeRequest);
 
             var result = await _sut.GetInsuranceByProduct(request);
 
@@ -247,8 +247,8 @@ namespace Insurance.Tests
                 Surcharge = 150
             };
 
-            await _sut.AddSurchargeToProductType(surchargeRequest1);
-            await _sut.AddSurchargeToProductType(surchargeRequest2);
+            _sut.AddSurchargeToProductType(surchargeRequest1);
+            _sut.AddSurchargeToProductType(surchargeRequest2);
 
             var result = await _sut.GetInsuranceByProduct(request);
 
