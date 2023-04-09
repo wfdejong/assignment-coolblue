@@ -49,7 +49,7 @@ public class InsuranceController : ControllerBase
 
     [HttpPost]
     [Route("cart")]
-    public async Task<ActionResult<ProductResponse>> GetInsuranceByCart([FromBody] List<ProductRequest> productRequests)
+    public async Task<ActionResult<CartInsuranceResponse>> GetInsuranceByCart([FromBody] List<ProductRequest> productRequests)
     {
         try 
         {
@@ -80,7 +80,6 @@ public class InsuranceController : ControllerBase
     {
         try
         {
-            //TODO: check if producttype name exists and return 404 if not.
             _surchargeRespository.Add(surchargeRequest.ProductTypeName, surchargeRequest.Surcharge);
 
             return Ok();
@@ -107,9 +106,10 @@ public class InsuranceController : ControllerBase
         if (!productTypeDto.IsSuccessStatusCode)
             throw new Exception($"Error in searching productType. Service returned {productTypeDto.StatusCode}");
 
-        //create and return Domain object
+        //get surcharge
         var surcharge = _surchargeRespository.Get(productTypeDto.Result.Name);
 
+        //create and return Domain object
         return new ProductInsurance(
             productId, productTypeDto.Result.Name, productTypeDto.Result.CanBeInsured, productDto.Result.SalesPrice, surcharge);        
     }

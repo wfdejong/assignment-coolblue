@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using Serilog;
 
 namespace Insurance.Api
@@ -24,12 +25,19 @@ namespace Insurance.Api
             var productsApi = new ProductsApi(Configuration.GetValue<string>("ProductsApi"));
             services.AddSingleton<IProductsApi>(productsApi);
             services.AddSingleton<ISurchargeResository, SurchargeRepository>();
+
+            services.AddEndpointsApiExplorer();
+            services.AddSwaggerGen();
+
             services.AddControllers();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseSwagger();
+            app.UseSwaggerUI();
+
             app.UseSerilogRequestLogging();
             app.UsePathBase(new PathString(@"/api"));
 
