@@ -16,7 +16,7 @@ public class InsuranceController : ControllerBase
 {
     private readonly IProductsApi _productApi;
     private readonly ISurchargeResository _surchargeRespository;
-    private readonly ILogger _logger = Log.ForContext("test", nameof(InsuranceController));
+    private readonly ILogger _logger = Log.ForContext<InsuranceController>();
 
 	public InsuranceController(IProductsApi productApi, ISurchargeResository surchargeResository)
 	{

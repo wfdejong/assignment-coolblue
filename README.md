@@ -38,9 +38,12 @@ The domain class created in Task 3 is ideal to check if the list of products con
 ## Task 5 [Feature 3]
 For this feature the following assumptions are made:
 -  If producttypename is already in the surcharge list, it will be overwritten with the new value
-- If producttype.canBeInsured is false, surcharge is added anyway
+- If producttype.canBeInsured is false, surcharge is added anyway.
+    - Reason: it makes sense to overwrite this value this way. Otherwise a change needs to the products api to achieve a surcharge on products that have this flag set to false.
 - No check is made if the product type actually exists.
+    - Reason: There is no method to get a product type by name, if a check is needed I would also change the product type api. 
 - Surcharges can be save in mememory and will dissapear after app restart.
+    - Reason: verified by interviewers.
 
 Surcharches are saved in a dictionary in the SurchargeRepository that is injected as a singleton. This way the items in the dictionary are saves as long as application keeps running. A restart would mean a delete of the saved surcharges. If a product insurance is calculated the surcharge looked up in the list and send to the calculation. If the product type does not exists in the surcharge list the value defaults to 0.
 
